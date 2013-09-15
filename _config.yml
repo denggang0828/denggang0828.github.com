@@ -1,12 +1,10 @@
 markdown: rdiscount
 permalink: /:title/
-name: 邓刚的技术博客
+name: 邓刚的博客
 author: DengGang
 qq: 515578345
 email: denggang0828@163.com
 duoshuo: denggang0828
-beian: 京ICP备12345号
-cnzz: 119959
 weibo: 1870430895
 github: denggang0828
 pygments: true
