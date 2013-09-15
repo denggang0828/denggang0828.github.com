@@ -1,0 +1,15 @@
+markdown: rdiscount
+permalink: /:title/
+name: 邓刚的技术博客
+author: DengGang
+qq: 515578345
+email: denggang0828@163.com
+duoshuo: denggang0828
+beian: 京ICP备12345号
+cnzz: 119959
+weibo: 1870430895
+github: denggang0828
+pygments: true
+safe: true
+paginate: 20
+about: "程序猿一枚，09年入行，投身移动互联网领域，目睹了Symbian的没落，也见证了iOS的崛起。这里将记录自己开发过程中收集整理的资料以及开发心得，主要会集中在App性能的提升及App的安全性问题。欢迎有相同兴趣的朋友多多交流沟通。板砖尽情的拍过来吧~ O(∩_∩)O~<br /><br />个人经历：<br /> 2010.3~2011.12 诺基亚研究院 Symbian工程师<br />2012.3~2013.08 搜狗科技发展 iOS工程师"
