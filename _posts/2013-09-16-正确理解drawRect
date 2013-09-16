@@ -1,0 +1,13 @@
+---
+layout: post
+title: "正确理解drawRect"
+categories: 性能优化
+tags: drawRect 性能优化
+---
+一、案例
+<br />
+二、drawRect是否真正高效？
+<br />
+三、为什么drawRect可以使滚动流程
+<br />
+四、其他可以改进的地方
