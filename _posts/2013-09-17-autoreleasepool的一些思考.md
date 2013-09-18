@@ -5,8 +5,8 @@ categories: 思考
 tags: autoreleasepool
 ---
 
-===
-一、为何使用autoreleasepool
+----
+###一、为何使用autoreleasepool
 
 autoreleasepool的工作原理讲的太多，这里只谈autoreleasepool设计的目的。
 
@@ -22,8 +22,8 @@ autoreleasepool的工作原理讲的太多，这里只谈autoreleasepool设计�
 
 不管对什么系统，频繁的分配释放内存总不是一件令系统愉快的事情，autoreleasepool有一个池的概念，与线程池、数据库连接池等概念类似。以池为单位总比以每个NSObject为单位更好些吧。
 
-===
-二、@autoreleasepool与NSAutoreleasepool
+----
+###二、@autoreleasepool与NSAutoreleasepool
 
 如果使用ARC，则只能用@autoreleasepool，如果使用NSAutoreleasepool的话编译会报错。而且苹果官方文档说到“@autoreleasepool指令比NSAutoreleasePool的性能要好很多”。对于这点不是很理解，对于ARC而言，编译器承担了retain和release等操作，理论上讲它的工作量较之前相比是线性增加了，那么性能是如何提高的呢？
 
