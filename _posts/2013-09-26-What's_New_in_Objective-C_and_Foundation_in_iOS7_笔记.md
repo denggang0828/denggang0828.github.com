@@ -28,12 +28,37 @@ Note:只有系统的framework可以使用modules这一特性，自己编写的�
 
 从编译器的角度加强了纠错检查机制，大大减小程序崩溃的几率。instancetype只能作为Objc方法的返回值类型，它的作用是告诉编译器这个方法返回值的类型必须为这个方法所在类的一个实例。
 
-
-iOS7之前：
+以NSArray的类方法arrayWithObjects的声明为例，
+iOS7之前为：
+{% highlight objc %}
 + (id)arrayWithObjects:(id)firstObj, ...;
-
-iOS7之后：
+{% endhighlight %}
+iOS7之后为：
+{% highlight objc %}
 + (instancetype)arrayWithObjects:(id)firstObj, ...;
+{% endhighlight %}
+
+示例代码1:
+{% highlight objc %}
+NSDictionary *d = [NSArray arrayWithObjects:@(1), @(2), nil];
+NSLog(@"%i", d.count);
+{% endhighlight %}
+下面开始分析示例代码1，
+
+iOS7之前：编译器不会有任何报错。因为arrayWithObjects返回值的类型为id，它是一个可以指向所有Objective-C类的指针，所以赋值给NSDictionary类的对象没有一点错误。这也是id的一个重要用途。
+
+那是不是说如果把arrayWithObjects的返回值改为NSArray*的话是不是就可以了呢？当然不是，如下示例代码2所示，
+示例代码2
+{% highlight objc %}
+@interface MyArray : NSArray
+@end
+MyArray *array = [MyArray arrayWithObjects:@(1), @(2), nil];
+{% endhighlight %}
+MyArray作为NSArray的子类，如果使用arrayWithObjects返回NSArray*的话，还需要进行类型转换才能赋给array。
+
+针对这个问题，instancetype横空出世。
+
+iOS7之后：arrayWithObjects返回值为instancetype。表示哪个类使用该方法，返回值的类型就为该类。所以在示例代码1中，arrayWithObjects返回值的类型应为NSArray*,在Xcode5中就会提示编译错误。当然，在示例代码2中，arrayWithObjects返回值的类型应该为MyArray了。
 
 
 ----
