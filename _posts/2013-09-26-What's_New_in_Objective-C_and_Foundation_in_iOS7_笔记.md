@@ -64,11 +64,46 @@ iOS7之后：arrayWithObjects返回值为instancetype。表示哪个类使用该
 ----
 ###三、New in NSArray
 
+开放了
+{% highlight objc %}
+- (id)firstObject NS_AVAILABLE(10_6, 4_0);
+{% endhighlight %}
+这一接口。
+
+可以发现，从iOS4.0之后就可以支持firstObject，但苹果一直没公开，直到iOS7。
+[array firstObject] 与 array[0]相比的话，还是推荐使用前者。因为如果array为空的话，前者返回的是nil，后者程序直接崩溃。后者使用的话还需要加一些检查的逻辑。
+
 ----
 ###四、New in NSData
+
+增加了base64编码的相关接口，可以再也不用去找三方库了。
+{% highlight objc %}
+@interface NSData (NSDataBase64Encoding)
+/* Create an NSData from a Base-64 encoded NSString using the given options. By default, returns nil when the input is not recognized as valid Base-64.
+*/
+- (id)initWithBase64EncodedString:(NSString *)base64String options:(NSDataBase64DecodingOptions)options NS_AVAILABLE(10_9, 7_0);
+/* Create a Base-64 encoded NSString from the receiver's contents using the given options.
+*/
+- (NSString *)base64EncodedStringWithOptions:(NSDataBase64EncodingOptions)options NS_AVAILABLE(10_9, 7_0);
+/* Create an NSData from a Base-64, UTF-8 encoded NSData. By default, returns nil when the input is not recognized as valid Base-64.
+*/
+- (id)initWithBase64EncodedData:(NSData *)base64Data options:(NSDataBase64DecodingOptions)options NS_AVAILABLE(10_9, 7_0);
+/* Create a Base-64, UTF-8 encoded NSData from the receiver's contents using the given options.
+*/
+- (NSData *)base64EncodedDataWithOptions:(NSDataBase64EncodingOptions)options NS_AVAILABLE(10_9, 7_0);
+@end
+{% endhighlight %}
 
 ----
 ###五、New in NSTimer
 
+NSTimer是作为资源添加到runloop中的，如果timer过多的话，CPU就要不断的去响应这些事件，CPU消耗可能会过大。所以引入了tolerance这一属性，对所有的timer进行归并，在可允许的范围内尽量的集中处理。
+{% highlight objc %}
+- (NSTimeInterval)tolerance;
+- (void)setTolerance:(NSTimeInterval)tolerance;
+{% endhighlight %}
+
 ----
 ###六、New in NSProgress
+
+待续。。。
