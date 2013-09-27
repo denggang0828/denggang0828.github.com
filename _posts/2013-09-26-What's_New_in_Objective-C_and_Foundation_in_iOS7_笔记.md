@@ -104,6 +104,10 @@ NSTimer是作为资源添加到runloop中的，如果timer过多的话，CPU就�
 {% endhighlight %}
 
 ----
-###六、New in NSProgress
+###六、NSProgress
 
-待续。。。
+这是iOS7新添加的类。用于记录一个任务集中每个任务完成的状态。使用KVO可以监听到这些状态供我们使用。
+
+NSProgress内部结构类似于一个树，存在父任务与子任务的概念，加上完善的通知机制，可以处理复杂关系的多任务。
+
+
