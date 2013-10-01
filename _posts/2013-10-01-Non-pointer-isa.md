@@ -45,3 +45,22 @@ typedef struct objc_class *Class;
 {% endhighlight %}
 可以看到，苹果官方文档都将isa标为即将弃用。
 
+作者在文中提到如下几点：
+
+###既然isa不再是个指针，那么它现在是什么？
+
+不管是在OS X还是在iOS系统中，都不会使用完虚拟地址空间的全部64位。所以，其中的一些位仍然是object’s class的指针；另外，Objective-C的运行时环境会使用剩余的一些位用来存储object的一些信息，比如引用计数或者其是否弱引用等。
+
+###这么做的目的？
+
+提高性能。充分利用这些剩余的位计算，可以大大的提高程序运行的速度，也可以减小内存的使用。在iOS7中，主要目的是优化retain/release和alloc/dealoc的性能。
+
+###编码时需要注意什么？
+
+不要直接使用obj->isa，否则编译器会报错。
+
+读写操作分别使用：[obj class] or object_getClass(obj)
+				  object_setClass()
+				  
+如果覆写allocWithZone，会将object的isa模块初始化为isa指针，这样isa模块就不能存储额外的信息从而能达不到优化的目的。应该使用object_setClass()来对object初始化。
+
