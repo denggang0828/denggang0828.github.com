@@ -59,8 +59,11 @@ typedef struct objc_class *Class;
 
 不要直接使用obj->isa，否则编译器会报错。
 
-读写操作分别使用：[obj class] or object_getClass(obj)
-				  object_setClass()
+读写操作分别使用：
+
+[obj class] or object_getClass(obj)
+
+object_setClass()
 				  
 如果覆写allocWithZone，会将object的isa模块初始化为isa指针，这样isa模块就不能存储额外的信息从而能达不到优化的目的。应该使用object_setClass()来对object初始化。
 
