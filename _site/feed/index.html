@@ -7,7 +7,7 @@
     <title>邓刚的博客</title>
     <link href="/feed/" rel="self" />
     <link href="" />
-    <lastBuildDate>2013-10-11T00:09:22+08:00</lastBuildDate>
+    <lastBuildDate>2013-10-11T00:29:05+08:00</lastBuildDate>
     <webMaster>denggang0828@163.com</webMaster>
     
     <item>
@@ -18,23 +18,27 @@
       <guid>/适配iOS7</guid>
       <content:encoded><![CDATA[<h3>一、适配iOS7</h3>
 
-<p>Xcode4.6下开发的应用程序，如果在Xcode5下重新编译，运行在iOS7下会有很多适配的问题。以我手头其中一个业余项目为例，这个工程没有使用Autolayout，且NavigationController和TabbarViewController的实现方式为隐藏系统的实现，然后自定义。如图：</p>
+<p>Xcode4.6下开发的应用程序，如果在Xcode5下重新编译，运行在iOS7会有很多适配的问题。以我手头其中一个业余项目为例，这个工程没有使用Autolayout，且NavigationController和TabbarViewController的实现方式为隐藏系统的实现，然后自定义。如图：</p>
 
 <p><img src="/assets/20131010adaptiOS7_1.png" alt="屏幕截图1" /></p>
 
-<p>可以看到，问题有这些：1、状态栏和下面的ViewController重合且不明显；2、整个可视界面上移20像素，底部漏出一部分。</p>
+<p>可以看到，问题有这些：
+1、状态栏和下面的ViewController重合且不明显；
+2、整个可视界面上移20像素，底部漏出一部分。</p>
 
 <p>众所周知，iOS7中状态栏不再占用绘制空间。坐标（0,0）在iOS7之前是从状态栏的左下角，而在iOS7中，它的位置实际上是在左上角，相当于整个window上移20像素。所以会导致如上图所示的情况。</p>
 
-<p>可能的解决方案：</p>
+<p>解决方案有三条：</p>
 
-<p>A) 在iOS7下让整个window下移20像素，露出状态栏。</p>
+<h4>A) 在iOS7下让整个window下移20像素，露出状态栏。</h4>
+
+<p>步骤：</p>
 
 <p>1、    在项目的info.plist中增加一行</p>
 
 <p>View controller-based status bar appearance 值为NO</p>
 
-<p>苹果的官方文档 解释了这一值“Apps default to using the new view controller-based status bar management system. To opt out of this, add a value of NO for the UIViewControllerBasedStatusBarAppearance key to your Info.plist.”</p>
+<p>苹果的官方文档解释了这一值：“Apps default to using the new view controller-based status bar management system. To opt out of this, add a value of NO for the UIViewControllerBasedStatusBarAppearance key to your Info.plist.”</p>
 
 <p>2、在AppDelegate.m文件中添加</p>
 
@@ -46,47 +50,66 @@
 </code></pre></div>
 
 
-<p><img src="/assets/20131010adaptiOS7_2.png" alt="屏幕截图2" /></p>
+<p>观察此时的效果图（下图），状态栏确实显示出来了。整个window下移20个像素，则上端露出20像素高度的状态栏。但由于这个区域默认的背景是黑色，所以需要设置状态栏显示的内容为白色，即样式UIStatusBarStyleLightContent。</p>
 
-<p>此时状态栏确实显示出来了。整个window下移20个像素，则上端露出20像素高度的状态栏。但由于这个区域默认的背景是黑色，所以需要设置状态栏显示的内容为白色，即样式UIStatusBarStyleLightContent。</p>
+<p><img src="/assets/20131010adaptiOS7_2.png" alt="屏幕截图2" /></p>
 
 <p>但这种做法带来的问题会很多，如下图所示：</p>
 
 <p><img src="/assets/20131010adaptiOS7_3.png" alt="屏幕截图3" /></p>
 
-<p>弹出的actionsheet出现这种诡异的现象，上端空出20个像素，而且隐藏的时候，动画结束时还会有20个像素显示，如果突然消失。造成这些现象的原因就是因为window的frame的改动。由于这个改动造成的工作量会很大，所以这种方式不提倡。</p>
+<p>弹出的actionsheet出现这种诡异的现象，上端空出20个像素，而且隐藏的时候，动画结束时还会有20个像素显示，然后突然消失。造成这些现象的原因就是因为window的frame的改动。由于这个改动造成的工作量会很大，所以这种方式不提倡。</p>
 
-<p>B）将每个ViewController中的所有Views的frame下移20个像素。</p>
+<h4>B）将每个ViewController中的所有Views的frame下移20个像素。</h4>
 
-<p>找到基本的ViewController，在其viewDidLoad函数中加入如下代码
-    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7){
-        for (UIView* view in self.view.subviews) {
-            view.frame = CGRectMake(view.frame.origin.x, view.frame.origin.y + 20, view.frame.size.width, view.frame.size.height);
-        }
-}
-这种情况适合于大部分ViewController有一个基类的VC，这样我们修改一个VC即可以达到适配的效果。</p>
+<p>找到根ViewController，在其viewDidLoad函数中加入如下代码</p>
+
+<div class="highlight"><pre><code class="objc">    <span class="k">if</span> <span class="p">([[[</span><span class="n">UIDevice</span> <span class="n">currentDevice</span><span class="p">]</span> <span class="n">systemVersion</span><span class="p">]</span> <span class="n">floatValue</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">7</span><span class="p">){</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">UIView</span><span class="o">*</span> <span class="n">view</span> <span class="k">in</span> <span class="n">self</span><span class="p">.</span><span class="n">view</span><span class="p">.</span><span class="n">subviews</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">view</span><span class="p">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">CGRectMake</span><span class="p">(</span><span class="n">view</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">origin</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">view</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">origin</span><span class="p">.</span><span class="n">y</span> <span class="o">+</span> <span class="mi">20</span><span class="p">,</span> <span class="n">view</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="p">,</span>          <span class="n">view</span><span class="p">.</span><span class="n">frame</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span><span class="p">);</span>
+        <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+
+<p>这种情况适合于大部分ViewController有一个基类的VC，这样我们修改一个VC即可以达到适配的效果。</p>
 
 <h4>C）苹果的官方文档给的思路为：</h4>
 
-<p>如果使用AutoLayout，通过设置constraints即可适配iOS7及之前版本。
-如果没使用AutoLayout，则需要根据iOS的版本调整view的位置。
-代码的调整方式与上面两条类似。通过[[[UIDevice currentDevice] systemVersion] floatValue]来区分判断；
-值得注意的是xib文件调整，如下：iOS6/7 Deltas为iOS6何iOS7布局的偏差提供了一个解决方案。</p>
+<p>*如果使用AutoLayout，通过设置constraints即可适配iOS7及之前版本。</p>
 
-<p>若View as选取的是iOS 7.0 and Later，则下图的View中的X , Y , Width, Height为iOS7版本的frame，在iOS6中的frame为这些值与iOS6/7 Deltas对应值相加。
-反之，如果View as选取的是iOS 6.1 and Eralier，则下图的View中的X , Y , Width, Height为iOS6版本的frame，在iOS7中的frame为这些值与iOS6/7 Deltas对应值相加。
-Ps：iOS6/7 Deltas的值可正可负。</p>
+<p>*如果没使用AutoLayout，则需要根据iOS的版本调整view的位置。</p>
 
-<p><img src="/assets/20131010adaptiOS7_4.png" alt="屏幕截图4" />
-<img src="/assets/20131010adaptiOS7_5.png" alt="屏幕截图5" /></p>
+<p>--代码的调整方式与上面两条类似。通过[[[UIDevice currentDevice] systemVersion] floatValue]来区分判断；</p>
+
+<p>--值得注意的是xib文件调整，如下：iOS6/7 Deltas为iOS6何iOS7布局的偏差提供了一个解决方案。</p>
+
+<p><img src="/assets/20131010adaptiOS7_4.png" alt="屏幕截图4" /></p>
+
+<p><img src="/assets/20131010adaptiOS7_5.png" alt="屏幕截图5" /></p>
+
+<p>若View as选取的是iOS 7.0 and Later，则下图的View中的X , Y , Width, Height为iOS7版本的frame，在iOS6中的frame为这些值与iOS6/7 Deltas对应值相加。</p>
+
+<p>反之，如果View as选取的是iOS 6.1 and Eralier，则下图的View中的X , Y , Width, Height为iOS6版本的frame，在iOS7中的frame为这些值与iOS6/7 Deltas对应值相加。</p>
+
+<p>ps：iOS6/7 Deltas的值可正可负。</p>
 
 <h3>二、这样做就足够了吗？</h3>
 
 <p>很明显，这两种适配方式都让人感觉很生硬。只是把iOS6升级到iOS7中原来App显示错乱的位置进行的一个调整。苹果在iOS7中对交互进行了重大的变革，从拟物化到扁平化，状态栏不占用空间，导航栏，Tab栏半透明化，view铺满整个屏幕，button无边界等等。如果还是用iOS6及之前的设计方案的话，界面整体风格会很差异，带来糟糕的用户体验。</p>
 
-<p>苹果非常鼓励用户升级到iOS7，并鼓励开发者对其原有的App重新设计，以符合扁平化的这种抽象效果。AppStroe上已经有多款应用专门对iOS7进行了设计，提供两套设计风格的界面，根据iOS版本选择。http://www.raywenderlich.com/49316/how-to-update-your-app-for-ios-7
-这篇文章中How to Update Your App for iOS 7。作者以一个iOS6上的工程为例，进行修改，以适应iOS7的风格。
+<p>苹果非常鼓励用户升级到iOS7，并鼓励开发者对其原有的App重新设计，以符合扁平化的这种抽象效果。AppStroe上已经有多款应用专门对iOS7进行了设计，提供两套设计风格的界面，根据iOS版本选择。</p>
+
+<p>这篇文章中<a href="http://www.raywenderlich.com/49316/how-to-update-your-app-for-ios-7">How to Update Your App for iOS 7</a>。作者以一个iOS6上的工程为例，进行修改，以适应iOS7的风格。
 对button，状态栏，tableView，tabbar都针对iOS7进行了调整，完成拟物化->扁平化的改变。</p>
+
+<h3>三、我们需要做的</h3>
+
+<p><a href="https://developer.apple.com/library/ios/documentation/UserExperience/Conceptual/TransitionGuide/Scoping.html#//apple_ref/doc/uid/TP40013174-CH7-SW1">Things Every App Must Do and Things Every App Should Do</a></p>
+
+<h3>四、Appearance and Behavior</h3>
+
+<p><a href="https://developer.apple.com/library/ios/documentation/UserExperience/Conceptual/TransitionGuide/AppearanceCustomization.html#//apple_ref/doc/uid/TP40013174-CH15-SW1">Appearance and Behavior</a></p>
 ]]></content:encoded>
     </item>
     
