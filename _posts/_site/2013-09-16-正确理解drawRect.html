@@ -1,0 +1,33 @@
+<h3 id='id1'>一、案例</h3>
+
+<p>之前做过一个应用，其中一个界面为UITableView，每一个UITableViewCell有背景图、缩略图及一些描述性的文字。后来，由于美工设计改变，需要对缩略图加一些遮罩及阴影的效果。因为之前是通过UIView的subviews的方式实现的tableviewCell，所以第一反应是通过layer设置其阴影及边框，虽然知道做这种操作会影响App的性能，特别是对这种滚动视图。果然，加了阴影效果之后，滚动会有明显的卡顿，点击cellItem时感觉反应缓慢。</p>
+
+<p>通过Instruments测试，帧率与60fps比较差距较大，着手考虑优化方案。首先尝试的是设置它的shadowpath，指定它的阴影路径从而减小对阴影形状的计算。改进效果不是很明显。然后尝试使用drawRect，效果改进明显。这个地方就带来一个思考，drawRect为什么高效。</p>
+<br /><hr />
+<h3 id='drawrect'>二、drawRect是否真正高效？</h3>
+
+<p>使用drawRect后使得滚动效果改进明显，是否意味着drawRect真的能提高性能？带着这个疑问查询了些资料，却看到了不同的说法。</p>
+
+<p>支持的说法：<br /> <a href='http://atebits.tumblr.com/post/197580827/fast-scrolling-in-tweetie-with-uitableview'>FastScrolling in Tweetie with UITableView</a>。作者08年写的文章，优化twitter的列表滚动性能，推荐使用drawRect。作者认为，如果使用subview的方式，在图层的混合处理上，GPU会耗费大量的资源，不如把所有的绘制内容使用drawRect绘制在一个view上，从而减轻GPU的工作量。</p>
+
+<p>反对的说法：<br /> iOS dev weekly中的这篇文章。<a href='http://floriankugler.com/blog/2013/5/24/layer-trees-vs-flat-drawing-graphics-performance-across-ios-device-generations'>Layer Trees vs. Flat Drawing – Graphics Performance Across iOS Device Generations</a>从文中的图表可以看出：3GS时代,drawRect的性能是明显优于subviews。但是从iPhone4开始，drawRect的性能大大下降。原因是视网膜屏的引进，使得绘制每个像素需要的次数是之前的4倍，而这是依赖于CPU的。相比于GPU，CPU性能提升的幅度不大，从而导致drawRect的低效。</p>
+
+<p>一些讨论:<br /> stackoverflow上的一些讨论：<a href='http://stackoverflow.com/questions/14659563/to-drawrect-or-not-to-drawrect-when-should-one-use-drawrect-core-graphics-vs-su'>to drawRect or not to drawRect</a>这篇讨论比较详细的比较了drawRect和subviews。也是推荐使用subviews，充分利用它的优化效果。同时，作者也讲解了为什么drawRect可以使滚动流畅。总结如下。</p>
+<br /><hr />
+<h3 id='drawrect'>三、为什么drawRect可以使滚动流畅</h3>
+
+<p>先理解几个概念。<br /></p>
+
+<p>1、CPU：中央处理器。<br /> 2、GPU：图形处理器。<br /> 3、硬件加速：iOS系统对图形的各种特效处理基本上都是基于GPU硬件进行加速的，它可以不用完全借助CPU而是通过GPU进行渲染以达到更流畅的操控表现。<br /> 4、离屏绘制：GPU一边在当前屏幕上进行绘制，而另一边在屏幕还没有处理图像信息之前通过CPU来生成图像信息的处理过程。<br /></p>
+
+<p>这些概念在这篇文章中有详细论述：<a href='http://robots.thoughtbot.com/post/36591648724/designing-for-ios-graphics-performance'>Designing for iOS: Graphics &amp; Performance</a> <br /></p>
+
+<p>决定滚动时能否流畅的一个重要因素是帧率能否达到60fps。这个帧率和渲染速度是息息相关的，如果和这个值差的太多的话，在视觉上就会有卡顿的现象。而决定帧率大小的是GPU的性能。<br /></p>
+
+<p>使用subviews的方式，是利用GPU的硬件加速机制，不仅实现方式简单，而且可以享受这种机制带来的性能上的提高（安卓设备图形显示的流畅度比iOS略差的一个原因就是iOS系统GPU的强大及硬件加速机制）。理论上讲，如果换用drawRect方式滚动不卡的话，那么使用subviews的流畅度会更高。但事实并非如此。原因在于GPU性能的瓶颈。<br /></p>
+
+<p>视图滚动时，GPU的主要工作在于对子视图的渲染处理。如果subviews的层级过多过复杂，或者又有很多层级是透明的，会导致GPU的计算量特别大。不仅需要计算每一层，而且需要计算这些层叠加起来的效果。这样就很容易达到GPU的性能瓶颈，影响帧率，导致卡顿现象。所以要解决这个问题，需要减轻GPU的工作量，减小他的负担。drawRect就可以做到这一点。原因：1、它是画在一个view上，不用处理多层subviews的混合计算；2、它的计算是通过CPU。<br /></p>
+
+<p>这样，原来GPU的一部分工作现在由CPU来承担，从GPU的角度来看，在UITableView中的每个cell就是一个view，这个view没有subviews，不需要去计算subviews合成的效果，从而达到优化性能的目的。<br /></p>
+
+<p>综上，对于滚动效果的优化，要兼顾考虑CPU及GPU的性能瓶颈。的确，drawRect会消耗大量的内存而subview做了很多优化的措施，但是如果subviews过于复杂让GPU达到了性能的瓶颈，这时需要考虑让CPU来承担一部分工作。所以在开发的过程中，不要固执的使用某一种方法，应使用调试工具Instruments-&gt;Graphices-&gt;Core Animation实时的去观测帧率fps，根据具体的项目需求选择最优的解决方案。</p>

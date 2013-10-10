@@ -1,0 +1,24 @@
+<hr />
+<h3 id='autoreleasepool'>一、为何使用autoreleasepool</h3>
+
+<p>autoreleasepool的工作原理讲的太多，这里只谈autoreleasepool设计的目的。</p>
+
+<p>大多数资料上会提到这一点：延迟释放内存。确实是，它是和objc管理内存的方式“引用计数”是密不可分的。等到autoreleasepool销毁的时候，才会对pool中的所有对象执行一遍release操作。但是为什么要延迟释放内存呢，用完立即释放不是更好吗？ 忘了看哪位大师讲的了，程序语言中每个模块的设计都有其内在的哲学道理，在我看来，所有模块设计的哲学理论基础都是为了“方便”这一目的。就autoreleasepool来说，通过查阅资料及自己的理解，简述如下：</p>
+
+<p>1方便开发者。</p>
+
+<p>学过C语言，对自动变量这一概念应该很熟悉吧。引用百度百科的描述 “自动变量就是指在函数内部定义使用的变量。他只是允许在定义他的函数内部使用它。在函数外的其他任何地方都不能使用的变量。” 对于自动变量内存的分配描述如下 “计算机在执行这个函数的时候，创建并为它分配内存，当函数执行完毕返回后，自动变量就会被销毁。”。 对开发人员来说，我可以只管用，不用管内存的销毁。 有没有感觉很类似，autoreleasepool维护的内容和自动变量类似，我们不需要去管这些内存的释放，只需要让autoreleasepool知道在它的作用范围内这些对象是autorelease类型的即可。当autoreleasepool生命周期结束的时候，自然会将这部分内存释放的。</p>
+
+<p>2方便系统。</p>
+
+<p>不管对什么系统，频繁的分配释放内存总不是一件令系统愉快的事情，autoreleasepool有一个池的概念，与线程池、数据库连接池等概念类似。以池为单位总比以每个NSObject为单位更好些吧。</p>
+<hr />
+<h3 id='autoreleasepoolnsautoreleasepool'>二、@autoreleasepool与NSAutoreleasepool</h3>
+
+<p>如果使用ARC，则只能用@autoreleasepool，如果使用NSAutoreleasepool的话编译会报错。而且苹果官方文档说到“@autoreleasepool指令比NSAutoreleasePool的性能要好很多”。对于这点不是很理解，对于ARC而言，编译器承担了retain和release等操作，理论上讲它的工作量较之前相比是线性增加了，那么性能是如何提高的呢？</p>
+
+<p>这里偷了个懒，没去研究LLVM的机制，大概可以猜下原因:</p>
+
+<p>1 NSAutoreleasepool使用时还需要alloc一个object，而@autoreleasepool不需要。</p>
+
+<p>2 编译器对retain、release这些操作做了相应的优化。</p>

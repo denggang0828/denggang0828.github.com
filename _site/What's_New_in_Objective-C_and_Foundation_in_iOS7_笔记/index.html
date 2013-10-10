@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" lang="zh-CN">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="author" content="DengGang" />
+    <title>What’s New in Objective-C and Foundation in iOS 7 笔记</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link href="/feed/" rel="alternate" title="DengGang" type="application/atom+xml" />
+    <link rel="stylesheet" href="/media/css/style.css" />
+    <link rel="stylesheet" href="/media/css/highlight.css" />
+    <script type="text/javascript" src="/media/js/jquery-1.7.1.min.js"></script>
+  </head>
+  <body>
+    <div id="container">
+      <div id="main" role="main">
+        <header>
+        <h1>What’s New in Objective-C and Foundation in iOS 7 笔记</h1>
+        </header>
+        <nav>
+        <span><a title="网站首页" class="" href="/">首页</a></span>
+        <span><a title="文章分类" class="" href="/categories/">分类</a></span>
+        <span><a title="标签索引" class="" href="/tags/">标签</a></span>
+        <!--<span><a title="友情链接" class="" href="/links/">链接</a></span>-->
+        <span><a title="留言交流" class="" href="/guestbook/">留言</a></span>
+        <span><a title="关于站长" class="" href="/about/">关于</a></span>
+        <span><a title="种子订阅" class="" href="/feed/" target="_blank">订阅</a></span>
+        </nav>
+        <article class="content">
+        <section class="meta">
+<span class="time">
+  <time datetime="2013-09-26">2013-09-26</time>
+</span>
+
+ | 
+<span class="categories">
+  分类
+  
+  <a href="/categories/#ios" title="ios">ios</a>&nbsp;
+  
+</span>
+
+
+ | 
+<span class="tags">
+  标签
+  
+  <a href="/tags/#ios7" title="ios7">ios7</a>&nbsp;
+  
+</span>
+
+</section>
+<section class="post">
+<p>今天读了matt的 <a href="http://www.raywenderlich.com/49850/whats-new-in-objective-c-and-foundation-in-ios-7">What’s New in Objective-C and Foundation in iOS 7</a>, 整理如下:</p>
+
+<hr />
+
+<h3>一、Modules</h3>
+
+<p>modules的概念是在2012年LLVM开发者大会上首次提出的。通过优化引入framework的方式达到提高编译速度的目的。module将整个framework作为一个独立的block，以和PCH文件相似的方式引入头文件进行预编译。并且可以帮你链接相应的framework。</p>
+
+<p>使用modules:</p>
+
+<p>1 旧工程。Build Settings -> Apple LLVM 5.0 –Language-Modules -> Enable Modules (C and Objective-C) 将其值设置为Yes。</p>
+
+<p>2 新工程。使用Xcode5新创建的工程是默认使用modules的。</p>
+
+<p>使用新语法@import，代替#import。但非强制，系统会默认做这一转换。</p>
+
+<p>Note:只有系统的framework可以使用modules这一特性，自己编写的或者三方的framework暂时还不能应用modules。</p>
+
+<hr />
+
+<h3>二、New return type – instancetype</h3>
+
+<p>从编译器的角度加强了纠错检查机制，大大减小程序崩溃的几率。instancetype只能用于Objc中方法的返回值类型，它的作用是告诉编译器这个方法返回值的类型必须为调用这个方法的类的类型。</p>
+
+<p>以NSArray的类方法arrayWithObjects的声明为例，
+iOS7之前为：</p>
+
+<div class="highlight"><pre><code class="objc"><span class="k">+</span> <span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">arrayWithObjects:</span><span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nv">firstObj</span><span class="p">,</span> <span class="p">...;</span>
+</code></pre></div>
+
+
+<p>iOS7之后为：</p>
+
+<div class="highlight"><pre><code class="objc"><span class="k">+</span> <span class="p">(</span><span class="n">instancetype</span><span class="p">)</span><span class="nf">arrayWithObjects:</span><span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nv">firstObj</span><span class="p">,</span> <span class="p">...;</span>
+</code></pre></div>
+
+
+<p>示例代码1:</p>
+
+<div class="highlight"><pre><code class="objc"><span class="n">NSDictionary</span> <span class="o">*</span><span class="n">d</span> <span class="o">=</span> <span class="p">[</span><span class="n">NSArray</span> <span class="n">arrayWithObjects</span><span class="o">:</span><span class="err">@</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="err">@</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="nb">nil</span><span class="p">];</span>
+<span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%i&quot;</span><span class="p">,</span> <span class="n">d</span><span class="p">.</span><span class="n">count</span><span class="p">);</span>
+</code></pre></div>
+
+
+<p>下面开始分析示例代码1，</p>
+
+<p>iOS7之前：编译器不会有任何报错。因为arrayWithObjects返回值的类型为id，它是一个可以指向所有Objective-C类的指针，所以赋值给NSDictionary* 类的对象没有一点错误。这也是id的一个重要用途。</p>
+
+<p>那是不是说如果把arrayWithObjects的返回值改为NSArray*的话是不是就可以了呢？当然不是，如下示例代码2所示，
+示例代码2</p>
+
+<div class="highlight"><pre><code class="objc"><span class="k">@interface</span> <span class="nc">MyArray</span> : <span class="nc">NSArray</span>
+<span class="k">@end</span>
+<span class="n">MyArray</span> <span class="o">*</span><span class="n">array</span> <span class="o">=</span> <span class="p">[</span><span class="n">MyArray</span> <span class="n">arrayWithObjects</span><span class="o">:</span><span class="err">@</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="err">@</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="nb">nil</span><span class="p">];</span>
+</code></pre></div>
+
+
+<p>MyArray作为NSArray的子类，如果使用arrayWithObjects返回NSArray*的话，还需要进行类型转换才能赋给array。</p>
+
+<p>针对这个问题，instancetype横空出世。</p>
+
+<p>iOS7之后：arrayWithObjects返回值为instancetype。表示哪个类使用该方法，返回值的类型就为该类的指针。所以在示例代码1中，arrayWithObjects返回值的类型应为（NSArray*）,在Xcode5中就会提示编译错误。</p>
+
+<p>当然，在示例代码2中，arrayWithObjects返回值的类型应该为（MyArray*）了。</p>
+
+<hr />
+
+<h3>三、New in NSArray</h3>
+
+<p>开放了</p>
+
+<div class="highlight"><pre><code class="objc"><span class="k">-</span> <span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">firstObject</span> <span class="n">NS_AVAILABLE</span><span class="p">(</span><span class="mi">10</span><span class="n">_6</span><span class="p">,</span> <span class="mi">4</span><span class="n">_0</span><span class="p">);</span>
+</code></pre></div>
+
+
+<p>这一接口。</p>
+
+<p>可以发现，从iOS4.0之后就可以支持firstObject，但苹果一直没公开，直到iOS7。
+[array firstObject] 与 array[0]相比的话，还是推荐使用前者。因为如果array为空的话，前者返回的是nil，后者程序直接崩溃。后者使用的话还需要加一些检查的逻辑。</p>
+
+<hr />
+
+<h3>四、New in NSData</h3>
+
+<p>增加了base64编码的相关接口，可以再也不用去找三方库了。</p>
+
+<div class="highlight"><pre><code class="objc"><span class="k">@interface</span> <span class="nc">NSData</span> <span class="nl">(NSDataBase64Encoding)</span>
+<span class="cm">/* Create an NSData from a Base-64 encoded NSString using the given options. By default, returns nil when the input is not recognized as valid Base-64.</span>
+<span class="cm">*/</span>
+<span class="k">-</span> <span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">initWithBase64EncodedString:</span><span class="p">(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">base64String</span> <span class="nf">options:</span><span class="p">(</span><span class="n">NSDataBase64DecodingOptions</span><span class="p">)</span><span class="nv">options</span> <span class="n">NS_AVAILABLE</span><span class="p">(</span><span class="mi">10</span><span class="n">_9</span><span class="p">,</span> <span class="mi">7</span><span class="n">_0</span><span class="p">);</span>
+<span class="cm">/* Create a Base-64 encoded NSString from the receiver&#39;s contents using the given options.</span>
+<span class="cm">*/</span>
+<span class="k">-</span> <span class="p">(</span><span class="n">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nf">base64EncodedStringWithOptions:</span><span class="p">(</span><span class="n">NSDataBase64EncodingOptions</span><span class="p">)</span><span class="nv">options</span> <span class="n">NS_AVAILABLE</span><span class="p">(</span><span class="mi">10</span><span class="n">_9</span><span class="p">,</span> <span class="mi">7</span><span class="n">_0</span><span class="p">);</span>
+<span class="cm">/* Create an NSData from a Base-64, UTF-8 encoded NSData. By default, returns nil when the input is not recognized as valid Base-64.</span>
+<span class="cm">*/</span>
+<span class="k">-</span> <span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">initWithBase64EncodedData:</span><span class="p">(</span><span class="n">NSData</span> <span class="o">*</span><span class="p">)</span><span class="nv">base64Data</span> <span class="nf">options:</span><span class="p">(</span><span class="n">NSDataBase64DecodingOptions</span><span class="p">)</span><span class="nv">options</span> <span class="n">NS_AVAILABLE</span><span class="p">(</span><span class="mi">10</span><span class="n">_9</span><span class="p">,</span> <span class="mi">7</span><span class="n">_0</span><span class="p">);</span>
+<span class="cm">/* Create a Base-64, UTF-8 encoded NSData from the receiver&#39;s contents using the given options.</span>
+<span class="cm">*/</span>
+<span class="k">-</span> <span class="p">(</span><span class="n">NSData</span> <span class="o">*</span><span class="p">)</span><span class="nf">base64EncodedDataWithOptions:</span><span class="p">(</span><span class="n">NSDataBase64EncodingOptions</span><span class="p">)</span><span class="nv">options</span> <span class="n">NS_AVAILABLE</span><span class="p">(</span><span class="mi">10</span><span class="n">_9</span><span class="p">,</span> <span class="mi">7</span><span class="n">_0</span><span class="p">);</span>
+<span class="k">@end</span>
+</code></pre></div>
+
+
+<hr />
+
+<h3>五、New in NSTimer</h3>
+
+<p>NSTimer是作为资源添加到runloop中的，如果timer过多的话，CPU就要不断的去响应这些事件，CPU消耗可能会过大。所以引入了tolerance这一属性，对所有的timer进行归并，在可允许的范围内尽量的集中处理。</p>
+
+<div class="highlight"><pre><code class="objc"><span class="k">-</span> <span class="p">(</span><span class="n">NSTimeInterval</span><span class="p">)</span><span class="nf">tolerance</span><span class="p">;</span>
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">setTolerance:</span><span class="p">(</span><span class="n">NSTimeInterval</span><span class="p">)</span><span class="nv">tolerance</span><span class="p">;</span>
+</code></pre></div>
+
+
+<hr />
+
+<h3>六、NSProgress</h3>
+
+<p>这是iOS7新添加的类。用于记录一个任务集中每个任务完成的状态。使用KVO可以监听到这些状态供我们使用。</p>
+
+<p>NSProgress内部结构类似于一个树，存在父任务与子任务的概念，加上完善的通知机制，可以处理复杂关系的多任务。</p>
+
+</section>
+<section align="right">
+<br/>
+<span>
+	<a  href="/%E5%88%9D%E7%AA%A5Multipath-TCP-of-iOS7/" class="pageNav"  >上一篇</a>
+	&nbsp;&nbsp;&nbsp;
+	<a  href="/Non-pointer-isa/" class="pageNav"  >下一篇</a>
+</span>
+</section>
+
+	
+	<div class="ds-thread" />
+		
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"denggang0828"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+
+
+        </article>
+      </div>
+
+    <footer>
+        <p><small>
+            <a href="http://github.com/denggang0828/denggang0828.github.com/new/master/_posts" target="_blank" title="撰写文章">Po</a>wer<a href="http://github.com/denggang0828/denggang0828.github.com/edit/master/_posts/2013-09-26-What's_New_in_Objective-C_and_Foundation_in_iOS7_笔记.md" target="_blank" title="编辑页面">ed</a> by <a href="http://jekyllrb.com" target="_blank">Jekyll</a> @ <a href="http://github.com/denggang0828/denggang0828.github.com" target="_blank" title="项目主页">GitHub</a>
+             | <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/cn/" target="_blank" title="许可协议">©</a> 2013 - 2013 <a href="/about/">DengGang</a>
+
+
+         </small></p>
+    </footer>
+
+    </div>
+  </body>
+</html>
