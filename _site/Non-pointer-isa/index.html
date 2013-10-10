@@ -108,8 +108,11 @@
 
 <p>不要直接使用obj->isa，否则编译器会报错。</p>
 
-<p>读写操作分别使用：[obj class] or object_getClass(obj)
-                  object_setClass()</p>
+<p>读写操作分别使用：</p>
+
+<p>[obj class] or object_getClass(obj)</p>
+
+<p>object_setClass()</p>
 
 <p>如果覆写allocWithZone，会将object的isa模块初始化为isa指针，这样isa模块就不能存储额外的信息从而能达不到优化的目的。应该使用object_setClass()来对object初始化。</p>
 
@@ -119,7 +122,7 @@
 <span>
 	<a  href="/What%27s_New_in_Objective-C_and_Foundation_in_iOS7_%E7%AC%94%E8%AE%B0/" class="pageNav"  >上一篇</a>
 	&nbsp;&nbsp;&nbsp;
-	<a   class="pageNavInvalid"  >下一篇</a>
+	<a  href="/%E9%80%82%E9%85%8DiOS7/" class="pageNav"  >下一篇</a>
 </span>
 </section>
 
