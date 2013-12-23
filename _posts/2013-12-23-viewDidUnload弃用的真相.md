@@ -33,7 +33,7 @@ layer's bitmap: 由layer的大小决定，一个retain iPad的全屏UIView的bit
 所以相对于bitmap，view和layer所占用的内存可以忽略了。基于这个，iOS6中，当收到内存警告时，系统只是把bitmap的内存释放掉，保留了CALayer和UIView的内存。当需要重新显示bitmap时，可以直接在drawRect中绘制出来。这样，我们既释放了绝大部分内存，又没有丢失view的信息，更关键的是这些都是系统帮我们做的，省时省力省心，一举多得。  
    
 ####三、进一步的优化
-drawRect是耗CPU的（参考http://denggang0828.github.io/正确理解drawRect/），bitmap的内存释放后如果还需要显示，需要调用drawRect重新绘制屏幕，苹果对这一块也进行的优化，可以减小drawRect的调用。   
+drawRect是耗CPU的（参考[正确理解drawRect](http://denggang0828.github.io/正确理解drawRect/)），bitmap的内存释放后如果还需要显示，需要调用drawRect重新绘制屏幕，苹果对这一块也进行的优化，可以减小drawRect的调用。   
 
 如果一块内存被分配，则会被标为in-use，当被释放时，会标为not in use。然而，对于bitmap所占用的内存，是被优化过的，标为volatile，这不是真正意义上的释放，如果这块内存没有被再次占用的话，当这块内存的bitmap需要显示时，可以直接拿过来使用，这样就避免再次执行drawRect。
 
