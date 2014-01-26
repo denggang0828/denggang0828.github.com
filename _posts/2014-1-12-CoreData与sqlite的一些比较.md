@@ -5,7 +5,9 @@ category: iOS
 tags: CoreData
 ---
 
+----
 最近一段时间的开发接触到了CoreData，使用它作为本地数据持久化的方案，而在此之前曾经也使用过Sqlite作为本地数据持久化的方案。对于这两种方案的差异，很多新手在刚接触时可能会有些迷惑，所以总结一下自己这段时间对它们的理解，比较一下两种方案的异同。
+
 ----
 ####一、	概念上的不同
 
@@ -16,9 +18,9 @@ sql负责从磁盘的数据库文件中读取/写入数据，至于程序对读�
 进一步讲，sql的主要功能是对本地数据进行持久化，而这只是CoreData一小部分可选的功能。在使用CoreData的过程中，我们完全可以不使用它的持久化功能，值得我们关注的是它对数据模型的处理功能上。
 [官方文档](https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CoreData/cdProgrammingGuide.html#//apple_ref/doc/uid/TP30001200-SW1)中对它的描述为：
 
-{% highlight objc %}
+“
 The Core Data framework provides generalized and automated solutions to common tasks associated with object life-cycle and object graph management, including persistence
-{% endhighlight %}
+”
 
 可以看到，CoreData的重点在于数据对象的图形化管理，更能体现面向对象的编程思想，而sql体现的是面向过程的编程思想。
 
@@ -48,3 +50,15 @@ sql直接操作数据库，所以读写效率很高，而且对数据的增删�
 ####四、对多线程的处理
 
 core data是线程不安全的。如果想在多线程中访问Core Data的话，一个方法是每个线程创建一个NSManagedObjectContext，每个NSManagedObjectContext的对象可以使用同一个NSPersistentStoreCoordinator实例。这个实例可以安全的顺序访问持久化存储文件。其他类似加锁的方式也是适用的。同样，sqlite也是线程不安全，但是一些对它的封装或其他数据库是可以支持多线程。
+
+对个人来说，自从接触CoreData之后，就喜欢上这个框架了。把数据真正的作为对象处理，充分体现了OO的思想。而且在数据存储时，直接对对象处理即可，避免了再写 对象-》sql字段 的转换，而且也避免了写大量的sql语句，极大的提高了开发效率。
+
+
+一些参考资料：
+
+1 [Core Data over SQLite Performance Tests ](http://i.ndigo.com.br/2010/07/core-data-over-sqlite-performance-tests-part-1)
+
+2 [Use CoreData or SQLite on iPhone?](http://stackoverflow.com/questions/1318467/use-coredata-or-sqlite-on-iphone)
+
+3 [differences between coredata and a database](http://www.cocoawithlove.com/2010/02/differences-between-core-data-and.html)
+
