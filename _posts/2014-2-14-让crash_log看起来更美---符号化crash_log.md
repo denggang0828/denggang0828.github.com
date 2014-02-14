@@ -9,7 +9,7 @@ tags: Symbolication
 
 ----
 
-####一、获取crash log
+###一、获取crash log
 
 ####方法：
 
@@ -44,7 +44,7 @@ NSSetUncaughtExceptionHandler可以用来进行异常处理，但功能非常有
 
 ----
 
-####二、获取dsym和app文件
+###二、获取dsym和app文件
 
 如果产生crash log的App是在你自己的机器上编译的，那么直接把log拖到XCode->Organizer->Device Logs即可自动完成符号化的过程。否则，你需要获得对应的dsym和app文件才能完成这一过程。
 
