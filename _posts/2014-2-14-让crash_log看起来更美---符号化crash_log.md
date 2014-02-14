@@ -120,9 +120,11 @@ dwarfdump --uuid YourApp.app.dSYM
 
 ####注意：
 
-1 YourApp的获得方式：邮件打开包YourApp.app.dSYM，一直到根目录可获得。
+1 YourApp的获得方式：右键打开包YourApp.app.dSYM，一直到根目录可获得。
 
 2 armv7s或者armv7的选取要根据crash log中得信息决定
+
+
 
 关于这块的讨论可以参考:
 
