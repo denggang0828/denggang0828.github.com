@@ -5,10 +5,10 @@ category: iOS
 tags: Symbolication
 ---
 
-分析崩溃日志是每个iOS开发者必备的技能，从崩溃日志中获取有用信息能帮助我们完善代码，让程序更稳健。对于如何分析crash log，网上已经有很多相关教程，推荐大家先读一下这篇文章 [iOS应用崩溃日志揭秘]
-(http://www.raywenderlich.com/zh-hans/30818/ios应用崩溃日志揭秘)，它对整个分析过程进行了详细描述。我的这篇文章是基于它，把其中符号化的过程单独拿出来讲一下，并做了一些小扩展和补充，希望能有助于大家的理解。
+分析崩溃日志是每个iOS开发者必备的技能，从崩溃日志中获取有用信息能帮助我们完善代码，让程序更稳健。对于如何分析crash log，网上已经有很多相关教程，推荐大家先读一下这篇文章[iOS应用崩溃日志揭秘](http://www.raywenderlich.com/zh-hans/30818/ios应用崩溃日志揭秘)，它对整个分析过程进行了详细描述。我的这篇文章是基于它，把其中符号化的过程单独拿出来讲一下，并做了一些小扩展和补充，希望能有助于大家的理解。
 
 ----
+
 ####一、获取crash log
 
 ####方法：
@@ -19,8 +19,7 @@ tags: Symbolication
 
 3 应用上架之后，从iTunes Connect上可以下载得到。
 
-这三种获取方式都在[iOS应用崩溃日志揭秘]
-(http://www.raywenderlich.com/zh-hans/30818/ios应用崩溃日志揭秘)一文中有详细介绍，不再详述。
+这三种获取方式都在[iOS应用崩溃日志揭秘](http://www.raywenderlich.com/zh-hans/30818/ios应用崩溃日志揭秘)一文中有详细介绍，不再详述。
 
 4 另外，这里再介绍一种常见的方式。有些应用在崩溃后再启动的时候，会弹个对话框，说系统检测到上次使用时异常退出了，要不要把异常信息反馈。这种采集crash log的方式是通过对函数NSSetUncaughtExceptionHandler的扩展实现的。
 
@@ -29,23 +28,22 @@ NSSetUncaughtExceptionHandler可以用来进行异常处理，但功能非常有
 使用时可以参考这里开源的代码：
 [UncaughtExceptionHandler]( https://github.com/denggang0828/UncaughtExceptionHandler)
 
-它的原理很简单，
-
-####基本流程如下：
+它的原理很简单，基本流程如下：
 
 1 用NSSetUncaughtExceptionHandler()注册自定义异常处理Handler，并注册signal处理机制
 
 在函数void InstallUncaughtExceptionHandler(void)中
 
-2程序崩溃
+2 程序崩溃
 
-3程序下次启动时如果发现异常文件，则进行自定义处理
+3 程序下次启动时如果发现异常文件，则进行自定义处理
 
 使用更简单：
 
 在didFinishLaunchingWithOptions函数中加入 InstallUncaughtExceptionHandler() 即可。
 
 ----
+
 ####二、获取dsym和app文件
 
 如果产生crash log的App是在你自己的机器上编译的，那么直接把log拖到XCode->Organizer->Device Logs即可自动完成符号化的过程。否则，你需要获得对应的dsym和app文件才能完成这一过程。
@@ -67,6 +65,7 @@ NSSetUncaughtExceptionHandler可以用来进行异常处理，但功能非常有
 打开XCode，Window->Organizer，选择Archives，定位到当时提交的那一列，右键选择Show in finder，选择对应的xcarchive文件，右键显示包内容，看以看到两个文件夹，分别存放dsym文件和app文件。
 
 ----
+
 ###三、符号化过程
 
 此时，已经拿到了crash log(log.crash)，dsym(projectName.app.dSYM)文件和app文件，首先要把他们放到一个目录下。执行如下命令：
@@ -101,6 +100,7 @@ dwarfdump --uuid YourApp.app.dSYM
 确保三者得到的udid是一致，才可能正确的进行符号化的过程。此处注意要区分armv7和armv7s分别对应的地址。
 
 ----
+
 ###四、使用atos
 
 另外，ChenLong提供了一种方法，使用atos符号化指定的内存地址：
@@ -124,7 +124,8 @@ dwarfdump --uuid YourApp.app.dSYM
 
 2 armv7s或者armv7的选取要根据crash log中得信息决定
 
-关于这块的讨论可以参考
+关于这块的讨论可以参考:
+
 [Matching up offsets in iOS crash dump to disassembled binary](http://stackoverflow.com/questions/10578155/matching-up-offsets-in-ios-crash-dump-to-disassembled-binary)
-[Atos cannot get symbols from dSYM of archived application
-]( http://stackoverflow.com/questions/7675863/atos-cannot-get-symbols-from-dsym-of-archived-application?lq=1)
+
+[Atos cannot get symbols from dSYM of archived application](http://stackoverflow.com/questions/7675863/atos-cannot-get-symbols-from-dsym-of-archived-application?lq=1)
