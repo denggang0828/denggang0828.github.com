@@ -7,8 +7,68 @@
     <title>邓刚的博客</title>
     <link href="/feed/" rel="self" />
     <link href="" />
-    <lastBuildDate>2013-10-11T00:29:05+08:00</lastBuildDate>
+    <lastBuildDate>2013-11-17T21:55:06+08:00</lastBuildDate>
     <webMaster>denggang0828@163.com</webMaster>
+    
+    <item>
+      <title>对关于iOS7新特性的一些资料的汇总</title>
+      <link href="/%E5%AF%B9%E5%85%B3%E4%BA%8EiOS7%E6%96%B0%E7%89%B9%E6%80%A7%E7%9A%84%E4%B8%80%E4%BA%9B%E8%B5%84%E6%96%99%E7%9A%84%E6%B1%87%E6%80%BB/"/>
+      <pubDate>2013-11-17T00:00:00+08:00</pubDate>
+      <author>DengGang</author>
+      <guid>/对关于iOS7新特性的一些资料的汇总</guid>
+      <content:encoded><![CDATA[<p>至今iOS7发布已经小半年了，一直都在关注iOS7，objc的新特性。这周二（11月12日），在上海苹果有个iOS7开发者讲座，正好有个前同事去参加了，问了下大概情况，也是全程英文，没发任何资料，禁止拍照，讲述的大纲就是围绕WWDC的内容，另外设了个lab，可以在lab中提问些问题。这个活动相关的视频会在12月18日最后一场活动之后放出。</p>
+
+<p>之前一直在看一些关于iOS7新特性的资料，苹果的[官方文档]（https://developer.apple.com/library/ios/releasenotes/General/WhatsNewIniOS/Articles/iOS7.html）对iOS7的新特性有全面的描述，但是看起来感觉没有侧重点，所以关注了一些开发者的心得分享，下面分享一些自己看过感觉还不错的文章。</p>
+
+<hr />
+
+<h3>1、<a href="http://www.raywenderlich.com/49850/whats-new-in-objective-c-and-foundation-in-ios-7">What’s New in Objective-C and Foundation in iOS 7</a></h3>
+
+<p>第一篇首推mattt大神的一篇文章，文章对 “Modules”和“instancetype”这两个概念进行了详细的描述。</p>
+
+<p>1)modules的概念是在2012年LLVM开发者大会上首次提出的。通过优化引入framework的方式达到提高编译速度的目的。module将整个framework作为一个独立的block，以和PCH文件相似的方式引入头文件进行预编译。并且可以帮你链接相应的framework。</p>
+
+<p>2)instance是用来取代id的，从编译器的角度加强了纠错检查机制，从而大大减小程序崩溃的几率。</p>
+
+<hr />
+
+<h3>2、<a href="http://perso.uclouvain.be/olivier.bonaventure/blog/html/2013/09/18/mptcp.html">Apple seems to also believe in Multipath TCP</a></h3>
+
+<p>Olivier Bonaventure的这篇文章中，提到iOS7用到了Multipath TCP这一技术。他通过截取网络数据包发现使用Siri的过程中,系统建立Multipath TCP的连接。</p>
+
+<hr />
+
+<h3>3、<a href="http://www.sealiesoftware.com/blog/archive/2013/09/24/objc_explain_Non-pointer_isa.html?utm_source=iOS+Dev+Weekly&amp;utm_campaign=iOS_Dev_Weekly_Issue_113&amp;utm_medium=email">Non-pointer isa</a></h3>
+
+<p>针对64的处理器，isa指针也做了一些改变，充分利用每一位，目的当然是为了提高性能。obj->isa这种形式在64位中也不要使用了。</p>
+
+<hr />
+
+<h3>4、<a href="http://fann.im/blog/2013/09/20/zadr-ios-7-dev-tricks/">iOS 7 Dev Tricks</a></h3>
+
+<p>一些新的framework、API还是看官方文档比较靠谱，但是这篇文章总结了些常用的API，比较清晰，值得一看。</p>
+
+<hr />
+
+<h3>5、<a href="http://www.objc.io/issue-5/">objc.io的issue-5是个iOS7的专题</a></h3>
+
+<p>对iOS7的多任务、Textkit、URLSession等都进行了专题讲座。讲的都比较详细，但是我没读完。</p>
+
+<hr />
+
+<h3>6、<a href="http://www.shinobicontrols.com/blog/posts/2013/09/19/introducing-ios7-day-by-day/">Introducing iOS7 Day-by-Day</a></h3>
+
+<p>这个比上面那个更详细，还是当参考资料吧。</p>
+
+<hr />
+
+<h3>7、<a href="http://asciiwwdc.com">WWDC 2013文字版本链接</a></h3>
+
+<hr />
+
+<h3>8、<a href="https://github.com/shu223/iOS7-Sampler">ios7 sample的一个demo</a></h3>
+]]></content:encoded>
+    </item>
     
     <item>
       <title>适配iOS7</title>
@@ -62,7 +122,7 @@
 
 <h4>B）将每个ViewController中的所有Views的frame下移20个像素。</h4>
 
-<p>找到根ViewController，在其viewDidLoad函数中加入如下代码</p>
+<p>在所有的ViewController中的viewDidLoad函数中加入如下代码</p>
 
 <div class="highlight"><pre><code class="objc">    <span class="k">if</span> <span class="p">([[[</span><span class="n">UIDevice</span> <span class="n">currentDevice</span><span class="p">]</span> <span class="n">systemVersion</span><span class="p">]</span> <span class="n">floatValue</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">7</span><span class="p">){</span>
         <span class="k">for</span> <span class="p">(</span><span class="n">UIView</span><span class="o">*</span> <span class="n">view</span> <span class="k">in</span> <span class="n">self</span><span class="p">.</span><span class="n">view</span><span class="p">.</span><span class="n">subviews</span><span class="p">)</span> <span class="p">{</span>
@@ -72,7 +132,7 @@
 </code></pre></div>
 
 
-<p>这种情况适合于大部分ViewController有一个基类的VC，这样我们修改一个VC即可以达到适配的效果。</p>
+<p>如果程序中所有的ViewController有一个基类的ViewController，这样是很方便的，我们只需要修改这个基类VC即可以达到适配的效果。当然，大多数的App都会使用这种设计模式，如果没有使用的话，那么就很糟糕了，只能一个一个的去修改VC。</p>
 
 <h4>C）苹果的官方文档给的思路为：</h4>
 
@@ -94,22 +154,58 @@
 
 <p>ps：iOS6/7 Deltas的值可正可负。</p>
 
+<hr />
+
 <h3>二、这样做就足够了吗？</h3>
 
-<p>很明显，这两种适配方式都让人感觉很生硬。只是把iOS6升级到iOS7中原来App显示错乱的位置进行的一个调整。苹果在iOS7中对交互进行了重大的变革，从拟物化到扁平化，状态栏不占用空间，导航栏，Tab栏半透明化，view铺满整个屏幕，button无边界等等。如果还是用iOS6及之前的设计方案的话，界面整体风格会很差异，带来糟糕的用户体验。</p>
+<p>很明显，这几种适配方式都让人感觉很生硬。只是把iOS6升级到iOS7中原来App显示错乱的位置进行的一个调整。苹果在iOS7中对交互进行了重大的变革，从拟物化到扁平化，状态栏不占用空间，导航栏，Tab栏半透明化，view铺满整个屏幕，button无边界等等。如果还是用iOS6及之前的设计方案的话，界面整体风格会很差异，带来糟糕的用户体验。根据这些变化可以明显看到，iOS7突出的是内容，而不是拟物化的UI，他更提倡使用简单的线条来表现丰富的内容。</p>
 
-<p>苹果非常鼓励用户升级到iOS7，并鼓励开发者对其原有的App重新设计，以符合扁平化的这种抽象效果。AppStroe上已经有多款应用专门对iOS7进行了设计，提供两套设计风格的界面，根据iOS版本选择。</p>
+<p>所以从根本上我们需要做的是，整个交互风格的改变。</p>
 
-<p>这篇文章中<a href="http://www.raywenderlich.com/49316/how-to-update-your-app-for-ios-7">How to Update Your App for iOS 7</a>。作者以一个iOS6上的工程为例，进行修改，以适应iOS7的风格。
+<p>苹果非常鼓励用户升级到iOS7，并鼓励开发者对其原有的App重新设计，以符合扁平化的这种抽象效果。AppStroe上已经有多款应用专门对iOS7进行了设计。提供两套设计风格的界面，iOS7之前的版本保持，对iOS7重新定义了样式。从一些数据中可以看到，用户升级到iOS7的比例还是很大的，苹果官方也在不断推动这个事情。iOS7对苹果来说是次很大的变革，之后的趋势应该是把重心放在iOS7上。</p>
+
+<p>这篇文章中<a href="http://www.raywenderlich.com/49316/how-to-update-your-app-for-ios-7">How to Update Your App for iOS 7</a>。<a href="http://www.cocoachina.com/newbie/basic/2013/1011/7142.html">中文版</a> 作者以一个iOS6上的工程为例，进行修改，以适应iOS7的风格。
 对button，状态栏，tableView，tabbar都针对iOS7进行了调整，完成拟物化->扁平化的改变。</p>
+
+<p>这里插播一句，不知道大家还记不记得支付宝、印象笔记等App，它们最初设计的样式是完全拟物化的，支付宝整个设计成了一个钱包的样式，使用起来极其不便，突出的不是功能而是UI了，后来终于改成普通的Tab形式了。虽然iOS7刚出的时候骂声一片，但是现在看看呢？用习惯了扁平化的风格，再看拟物化的是不是很丑。。。所以，苹果还是一家很伟大的公司。</p>
+
+<hr />
 
 <h3>三、我们需要做的</h3>
 
-<p><a href="https://developer.apple.com/library/ios/documentation/UserExperience/Conceptual/TransitionGuide/Scoping.html#//apple_ref/doc/uid/TP40013174-CH7-SW1">Things Every App Must Do and Things Every App Should Do</a></p>
+<p>官网上给出了程序适配iOS7的TODO list，<a href="https://developer.apple.com/library/ios/documentation/UserExperience/Conceptual/TransitionGuide/Scoping.html#//apple_ref/doc/uid/TP40013174-CH7-SW1">Things Every App Must Do and Things Every App Should Do</a></p>
 
-<h3>四、Appearance and Behavior</h3>
+<h4>1、Must do</h4>
 
-<p><a href="https://developer.apple.com/library/ios/documentation/UserExperience/Conceptual/TransitionGuide/AppearanceCustomization.html#//apple_ref/doc/uid/TP40013174-CH15-SW1">Appearance and Behavior</a></p>
+<p>1 更换icon。iOS7中，retina屏需要的icon尺寸大小为120 X 120（之前为114 X 114）。</p>
+
+<p>2 更换程序的启动图片。需要将状态栏的局域包含进来。</p>
+
+<p>3 设计要支持视网膜屏及iPhone5。</p>
+
+<h4>2、Should do</h4>
+
+<p>1 由于iOS7中很多控件元素有一定的透明度，所以需要确保你之前设计的内容样式依然能够清晰可见。</p>
+
+<p>2 重新设计自定义的bar button icons，适应新风格。</p>
+
+<p>3 检查之前的button，是否由于去除边框后而带来问题。</p>
+
+<p>4 使用Auto layout，避免在布局时使用固定的坐标信息。</p>
+
+<p>5 一些控件尺寸大小都变了，检查他们布局是否依然美观。</p>
+
+<p>6 使用动态类型，使用户可以决定屏幕上的字体大小。</p>
+
+<p>7 iOS7中增加了手势滑出控制中心的操作，确保这个手势和程序中的手势操作不冲突。</p>
+
+<p>8 对之前的一些阴影、渐变、倾斜等效果重新权衡下，确保在iOS7扁平化下保持美观。</p>
+
+<p>9 确保不再使用deprecated APIs。</p>
+
+<p>对于具体的UI样式，参考文档<a href="https://developer.apple.com/library/ios/documentation/UserExperience/Conceptual/TransitionGuide/AppearanceCustomization.html#//apple_ref/doc/uid/TP40013174-CH15-SW1"> iOS 7 UI Transition Guide</a>。</p>
+
+<p>总体看来，文档中苹果建议开发者使用iOS7新特性，开发具有更好用户体验的Apps。为了让你的App更能吸引眼球，赶快适配iOS7吧。</p>
 ]]></content:encoded>
     </item>
     
