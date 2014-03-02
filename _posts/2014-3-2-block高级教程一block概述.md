@@ -33,8 +33,6 @@ tags: block
 2 Objective-C 高级编程：[http://book.douban.com/subject/24720270/](http://book.douban.com/subject/24720270/)
 
 
-===========我是分割线=============
-
 ----
 ####一、概述
 
