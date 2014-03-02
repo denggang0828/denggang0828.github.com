@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'block高级教程(二、block结构分析)'
+title: 'block高级教程 ( 二、block结构分析 )'
 category: iOS
 tags: block
 ---

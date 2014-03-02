@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'block高级教程(一、block概述)'
+title: 'block高级教程 ( 一、block概述 ) '
 category: iOS
 tags: block
 ---
