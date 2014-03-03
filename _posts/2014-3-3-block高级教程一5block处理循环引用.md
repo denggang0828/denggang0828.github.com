@@ -5,16 +5,30 @@ category: iOS
 tags: block
 ---
 
-使用block时比较容易引起循环引用，因为block会自动持有它引用的对象，对象也会持有block，从而引起内存泄露
+使用block时较常见的一个问题是容易引起循环引用，因为block会截获局部变量从而持有它引用的对象，而对象也会持有block，这种情况下就会造成内存无法释放从而引起内存泄露。
 
-1 ARC中用__weak
+当然，我们也有多种方案避免block造成的循环引用。
 
-2 __block。 坏处，必须执行一次block，否则还是会循环引用。
+1 ARC中推荐使用\_\_weak。使用\_\_weak修饰block所引用的对象，这样block弱引用外部对象，打破了外部对象和block之间的循环引用。
 
-其中__forwarding在初始化的时候是指向自身的，当NSConcreteStackBlock类型的Block通过copy变为NSConcreteMallocBlock时，栈空间的Block的__forwarding指针会改变指向堆空间的Block。
+2 MMR中，与ARC中的\_\_weak对应，我们可以使用\_\_unsafe\_\_unretained修饰符。使用它的风险是容易造成空指针错误，(与\_\_weak的区别为：如果\_\_weak变量不指向任何对象内存区域，则会自动置为nil；但是\_\_unsafe\_\_unretained不会，会指向一块未知的内存。)如果使用不当，容易引起程序崩溃。
 
-####1 使用__weak
+3 ARC和MMR中都可以使用 \_\_block修饰符。但是在ARC和MMR中，\_\_block的用途有很大的不同。
+
+MMR中，block对\_\_block变量是指针复制，不会使retainCount加1。
+
+ARC中，只有\_\_weak和\_\_unsafe_unretained声明的变量不会被强引用。所以，block变量持有\_\_block变量，\_\_block变量持有引用对象，对象持有block变量。看起来这还是一个环，没能解决循环引用问题。所以对于这种方案，还需要执行一下block，在block的执行体中使用完\_\_block变量后将其置为nil，打破block变量对\_\_block变量的持有从而解决循环引用。
+ 坏处，必须执行一次block，否则还是会循环引用。
+
+下面以几段示例代码描述以上解决方案：
+
+----
+###一、问题代码
+
+在ARC中有如下代码：
+
 {% highlight objc %}
+
 typedef void (^blk_t)(void);
 
 @interface MyObject: NSObject
@@ -23,11 +37,15 @@ typedef void (^blk_t)(void);
 }
 @end
 
+
 @implementation MyObject
+
 - (id)init
 {
      self = [super init];
+
      blk_ = ^{NSLog(@"self = %@", self); };
+
      return blk;
 }
 
@@ -37,46 +55,47 @@ typedef void (^blk_t)(void);
 }
 @end
 
+
 int main()
 {
      id o = [[MyObject alloc] init];
+
      NSLog(@"%@", o);
+
      return 0;
 }
+
 {% endhighlight %}
 
-这里 MyObject类强引用blk_， blk_又对MyObject的对象强引用，形成循环引用。
+这是一段典型的由于block引起循环引用问题的代码。 MyObject类的对象强引用blk_变量， blk_又对MyObject的对象强引用，形成循环引用。
 
-
-改正：
-
-使用__weak
+----
+###二、使用__weak方案
 
 {% highlight objc %}
+
 - (id)init
 {
      self = [super init];
 
      id __weak tmp = self;
+
      blk_ = ^{NSLog(@"self = %@", tmp); };
+
      return blk;
 } 
+
 {% endhighlight %}
 
-ios4之前使用__unsafe_unretained
+将MyObject变量赋值给一个\_\_weak变量，blk\_使用这个\_\_weak变量。这样，blk\_变量对MyObject类对象的引用变为弱引用，从而打破了循环引用。
 
-####2 使用__block
+iOS4之前使用__unsafe_unretained与之类似，不详述。
 
-在ARC和非ARC情况下都可以使用。
-
-ARC情况下最好用__weak
-
-非ARC:
-在不用__block的说明符的情况下，当Block发生copy的时候会retain Block内部用到的对象实例。在用了__block说明符的情况下，打包成的__Block_byref_i_0只是记录的用到的对象的指针，在copy的时候并没有retain结构体内部的对象实例。
-
-ARC：需要执行block打破引用。
+----
+####三、使用__block方案
 
 {% highlight objc %}
+
 typedef void (^blk_t)(void);
 
 @interface MyObject: NSObject
@@ -85,10 +104,13 @@ typedef void (^blk_t)(void);
 }
 @end
 
+
 @implementation MyObject
+
 - (id)init
 {
      self = [super init];
+
     __block id tmp = self;
 
      blk_ = ^{
@@ -97,49 +119,40 @@ typedef void (^blk_t)(void);
     
         tmp = nil;    
      };
-     return blk;
+
+     return self;
 }
 
 - (void)execBlock
 {
-  blk_();
+     blk_();
 }
+
 - (void)dealloc
 {
      NSLog(@"dealloc");
 }
 @end
 
+
 int main()
 {
      id o = [[MyObject alloc] init];
-     NSLog(@"%@", o);
+
+     [o execBlock];
+
      return 0;
 }
+
 {% endhighlight %}
-必须执行block
 
-####3 对比：
+在ARC中，必须执行block，打破block变量对__block的引用
 
-__block优点：
- 可控制对象的持有期间
-在不能使用__weak修饰符的环境中不使用__unsafe_unretained即可（不必担心悬垂指针）
-在执行block时可动态决定是否将nil或其他对象赋值给__block变量中
+----
+###四、结论
 
-__block缺点：
-为避免循环引用必须执行block
+对于block引起的循环引用：
 
+ARC中，使用\_\_weak修饰符来解决；
 
-根据block的具体用途选择合适的方法。
-
-
-
-
-
-
-
-
-:wq
-
-
-
+MMR中，使用\_\_block修饰符来解决。
