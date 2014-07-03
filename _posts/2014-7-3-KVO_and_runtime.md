@@ -19,7 +19,7 @@ KVO的实现就是依赖于强大的runtime，它利用的是runtime可以动态
 进行注册，当这个属性发生变化时，我们就会收到相应的通知，在observeValueForKeyPath:ofObject:change:context:中进行处理即可，如果不需要继续观察，则执行removeObserver:forKeyPath:
 移除观察者的操作。其实这就是一种典型的observer设计模式。使用起来就是这么简单，我们不需要为此编写大量的代码，只需要注册一下即可，因为Cocoa的底层框架已经对此做了支持。
 
-先简叙下原理：
+下面我们讨论下Cocoa到底帮我们做了什么，先简叙下基本原理：
 
 当执行addObserver:forKeyPath:options:context:添加观察者时，Cocoa会通过runtime为这个属性对象所属的类创建一个子类，然后将这个属性对象的isa指向新创建的子类上。这个过程就是通过runtime实现的。
     
