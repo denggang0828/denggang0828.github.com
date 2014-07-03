@@ -1,11 +1,11 @@
 ---
 layout: post
-title: 'KVO andruntime.)'
+title: 'KVO and Runtime'
 category: iOS
 tags: KVO
 ---
 
-####一、 runtime
+####一、 Runtime
 
 Objective-C的一个亮点在于它的动态性，它的实现依赖于强大的runtime运行时环境。
 
@@ -26,6 +26,7 @@ KVO的实现就是依赖于强大的runtime，它利用的是runtime可以动态
 那为什么要新创建一个子类呢？当然是和KVO有关。对于这个属性对象所属的类，默认情况下是不具备KVO功能的。在子类中重新实现对象属性的setter方法，实现发送通知的功能。这样，表面上看，是属性对象所在的类实现的KVO，但实际上是通过runtime新生成的子类完成的这一功能。
 
 为了使这一过程更加清晰，参照https://mikeash.com/pyblog/friday-qa-2009-01-23.html中得实例，解释一下这个过程
+
 {% highlight objc %}
 
 #import <Foundation/Foundation.h>
@@ -100,6 +101,7 @@ int main(int argc, char * argv[])
 
 
 输出为：
+
 {% highlight objc %}
 
 origin:<TestClass: 0x8d7c250>
