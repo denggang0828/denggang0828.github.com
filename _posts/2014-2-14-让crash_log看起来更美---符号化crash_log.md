@@ -116,7 +116,7 @@ dwarfdump --uuid YourApp.app.dSYM
 
 3 计算address = address1 + address2 – address3。
 
-4 atos -arch armv7s -o EssayZone address 输出即为符号化的信息。
+4 atos -arch armv7s -o YourApp address 输出即为符号化的信息。
 
 ####注意：
 
