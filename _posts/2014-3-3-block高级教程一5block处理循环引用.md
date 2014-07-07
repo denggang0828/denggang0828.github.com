@@ -19,9 +19,9 @@ tags: block
 
 ####3 ARC和MRR中都可以使用 \_\_block修饰符。
 
-但是在ARC和MMR中，\_\_block的用途有很大的不同，如下：
+但是在ARC和MRR中，\_\_block的用途有很大的不同，如下：
 
-MMR中，block对\_\_block修饰的变量的处理，实际上是将其转换成\_\_Block_byref_i_0结构体。通过之前的介绍，我们知道\_\_Block_byref_i_0结构体有个指向自身的\_\_forwarding指针，当\_\_block从栈复制到堆上时，\_\_forwarding转而指向堆上的\_\_Block_byref_i，并没有使引用计数加1。所以，Block没有对\_\_block变量进行retain操作，从而避免循环引用。
+MRR中，block对\_\_block修饰的变量的处理，实际上是将其转换成\_\_Block_byref_i_0结构体。通过之前的介绍，我们知道\_\_Block_byref_i_0结构体有个指向自身的\_\_forwarding指针，当\_\_block从栈复制到堆上时，\_\_forwarding转而指向堆上的\_\_Block_byref_i，并没有使引用计数加1。所以，Block没有对\_\_block变量进行retain操作，从而避免循环引用。
 
 
 ARC中，没有retainCount的概念，代替的是强引用和弱引用。只有\_\_weak和\_\_unsafe_unretained声明的变量不会被强引用，block对\_\_block变量的持有是强引用。所以，block变量持有\_\_block变量，\_\_block变量持有引用对象，对象持有block变量。看起来这还是一个环，没能解决循环引用问题。所以对于这种方案，还需要执行一下block，在block的执行体中使用完\_\_block变量后将其置为nil，打破block变量对\_\_block变量的持有从而解决循环引用。
