@@ -13,11 +13,11 @@ tags: block
 
 使用\_\_weak修饰block所引用的对象，这样block弱引用外部对象，打破了外部对象和block之间的循环引用。
 
-####2 MMR中，与ARC中的\_\_weak对应，我们可以使用\_\_unsafe\_\_unretained修饰符。
+####2 MRR中，与ARC中的\_\_weak对应，我们可以使用\_\_unsafe\_\_unretained修饰符。
 
 使用它的风险是容易造成空指针错误，(与\_\_weak的区别为：如果\_\_weak变量不指向任何对象内存区域，则会自动置为nil；但是\_\_unsafe\_\_unretained不会，会指向一块未知的内存。)如果使用不当，容易引起程序崩溃。
 
-####3 ARC和MMR中都可以使用 \_\_block修饰符。
+####3 ARC和MRR中都可以使用 \_\_block修饰符。
 
 但是在ARC和MMR中，\_\_block的用途有很大的不同，如下：
 
@@ -164,4 +164,4 @@ int main()
 
 ARC中，推荐使用\_\_weak修饰符来解决；
 
-MMR中，推荐使用\_\_block修饰符来解决；不推荐使用\_\_unsafe_unretained。
+MRR中，推荐使用\_\_block修饰符来解决；不推荐使用\_\_unsafe_unretained。
