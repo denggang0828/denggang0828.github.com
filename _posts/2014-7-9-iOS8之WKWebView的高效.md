@@ -51,13 +51,14 @@ iOS8之前，这些以插件形式运行在应用程序内部的功能都是不�
 
 参考资料：
 
-1 [http://nshipster.cn/ios8/](http://nshipster.cn/ios8/)
+1 、[http://nshipster.cn/ios8/](http://nshipster.cn/ios8/)
 
-2 [iOS 8 WebKit changes finally allow all apps to have the same performance as Safari
+2 、[iOS 8 WebKit changes finally allow all apps to have the same performance as Safari
 ](http://9to5mac.com/2014/06/03/ios-8-webkit-changes-finally-allow-all-apps-to-have-the-same-performance-as-safari/)
 
-3 [Why iOS 8′s WKWebView is a Big Deal for Hybrid Development
+3 、[Why iOS 8′s WKWebView is a Big Deal for Hybrid Development
 ](http://developer.telerik.com/featured/why-ios-8s-wkwebview-is-a-big-deal-for-hybrid-development/)
 
-4 [Why the Nitro JavaScript Engine Isn’t Available to Apps Outside Mobile Safari in iOS 4.3](http://daringfireball.net/2011/03/nitro_ios_43)
-4[iOS8,WebKit Performance,and XPC](http://daringfireball.net/linked/2014/06/09/ios-8-webkit)
+4 、[Why the Nitro JavaScript Engine Isn’t Available to Apps Outside Mobile Safari in iOS 4.3](http://daringfireball.net/2011/03/nitro_ios_43)
+
+5、[iOS8,WebKit Performance,and XPC](http://daringfireball.net/linked/2014/06/09/ios-8-webkit)
