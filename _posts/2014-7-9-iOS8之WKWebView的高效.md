@@ -19,7 +19,7 @@ iOS8中引入了全新的WebKit框架，提供的WKWebView，自称可以达到S
 JS性能提升了368.42%
 整体性能提升了20%
 
-所以，Sarifi的性能是远远由于UIWebView的，WKWebView的性能优势凸显出来，在iOS8中，应当使用WKWebView取代UIWebView。
+所以，Sarifi的性能是远远优于UIWebView的，WKWebView的性能优势凸显出来，在iOS8中，应当使用WKWebView取代UIWebView。
 
 
 ###二、为什么UIWebView低效？
@@ -43,9 +43,9 @@ iOS8中，WkWebView的高效是因为解除了对Nitro JavaScript engine的限�
 
 不是的。
 
-iOS8中，进程间通信的API得到了极大的改进-XPC。带来的收益有：接入三方键盘，共享存储空间，滤镜，及高效的Webkit
+iOS8中，进程间通信的API得到了极大的改进-XPC。带来的收益有：允许接入三方键盘，共享存储空间，滤镜，及高效的Webkit
 
-iOS8之前，这些以插件形式运行在应用程序内部的功能都是不安全，可能是程序crash或存在安全隐患。随着XPC的增强，可以把这些功能放在一个独立的沙盒中，从而保证系统的高效和安全。
+iOS8之前，这些以插件形式运行在应用程序内部的功能都是不安全，可能使程序crash或存在安全隐患。随着XPC的增强，可以把这些功能放在一个独立的沙盒中，从而保证系统的高效和安全。
 
 
 
